@@ -1,8 +1,8 @@
 # simpsons-coding-challenge
 Simpsons Coding Challenge API
 
-- API running as basic-security
-username = admin
+- API running as basic-security  
+username = admin  
 password = admin
 
 - API running as oauth-security (to obtain the jwt token)  
