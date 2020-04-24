@@ -7,7 +7,7 @@ password = admin
 
 - API running as oauth-security (to obtain the jwt token)  
 client_username = Virtusa  
-cliente_passsword = virtus@  
+client_passsword = virtus@  
 username = admin  
 password = admin  
 
