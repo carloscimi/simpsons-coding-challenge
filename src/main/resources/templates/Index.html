@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+  	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simpsons Coding Challenge</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.5.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script> 
+    <script src="js/bootstrap-notify.min.js"></script>
+    
+    <script title="GET CHARACTER">
+		$(document).ready(function(){
+			
+			$("#formGrl").css("display", "none");
+			$("#formNewCharacter").css("display", "none");
+			
+			$.get("http://localhost:8083/api/v1/simpsonscharacters/listPictures", function(pictures, statusp){
+		    	  console.log(statusp);
+		    	  $.each(pictures, function (k, p) {
+						$('#selectPicture').append($('<option value=\''+ p +'\'>'+ p+'</option>'));	
+					}); 
+		      });
+			
+		    $.get("http://localhost:8083/api/v1/simpsonscharacters/", function(data, status){
+		    		      
+		      $.each(data, function (key, entry) {
+		    	  var id = entry._id;
+		    	
+		    	  $('#listCharacter').append($('<li style="margin-bottom: 20px;"><a id=\''+id+'\' href="javascript:getPhrases(\'' + id + '\');" title="'+ entry.firstName +
+		    			  '"><img alt="" class="simpsons-icon" src="'+ entry.picture +
+		    			  '"></a></li>'));
+		      });
+		      
+		      $("#formNewCharacter").css("display", "block");
+		      
+		    });   
+		});
+	</script>
+	
+	<script title="GET PHRASES">
+		function getPhrases(id) {
+			
+			$("#formGrl").css("display", "none");
+			document.getElementById("newPhrase").value = "";
+			
+			$.get("http://localhost:8083/api/v1/simpsonscharacters/" + id, function(data, status){
+				
+				$('#listPhrase').empty();
+				
+				document.getElementById("firstName").value = data.firstName;
+				document.getElementById("lastName").value = data.lastName;
+				document.getElementById("age").value = data.age;
+				document.getElementById("_id").value = data._id;;
+				document.getElementById("picture").value = data.picture;
+				
+				$.get("http://localhost:8083/api/v1/simpsonsphrases/character/" + id, function(data, status){
+					
+					$.each(data, function (key, entry) {
+						$('#listPhrase').append($('<div id=\''+entry._id+'\'><textarea id=\''+entry._id+'\' class="form-control" aria-label="With textarea" style="resize: none; width: 100%;" rows="2">' + 
+								entry.phrase + '</textarea>' +
+								'<button type="button" onClick="updatePhrase(\'' + entry._id + '\');" class="btn btn-primary" style="margin-bottom: 20px;">Update</button>' +
+								'<button type="button" onClick="deletePhrase(\'' + entry._id + '\');" class="btn btn-danger" style="margin: 0 0 20px 40px;">Delete</button></div>'));
+					});
+					
+				});
+				
+				$("#formNewCharacter").css("display", "none");
+				$("#formGrl").css("display", "block");
+				
+				$("html, body").animate({ scrollTop: 0 }, "slow");
+			});
+		}
+	</script>
+	
+	<script title="UPDATE CHARACTER">	
+		function updateCharacter() {	
+			
+			var id = $('#formCharacter').find('input[id="_id"]').val();
+			
+			$.ajax({
+			    url: 'http://localhost:8083/api/v1/simpsonscharacters/' + id,
+			    method: 'PUT',
+			    contentType: "application/json;",
+			    data: JSON.stringify({
+				    firstName: $('#formCharacter').find('input[id="firstName"]').val(),
+				    lastName: $('#formCharacter').find('input[id="lastName"]').val(),
+				    picture: $('#formCharacter').find('input[id="picture"]').val(),
+				    age: $('#formCharacter').find('input[id="age"]').val()
+			    }),
+			    success: function(result) {
+			    	console.log(result);
+			    }
+			});
+		
+			
+			$.notify({
+				message: 'Character has been updated!'
+			},{
+				type: 'success',	
+				placement: { 
+				    from: "bottom",
+				    align: "center"
+				}
+			});
+
+			return false;
+		}
+	</script>
+	
+	<script title="UPDATE PHRASE">	
+		function updatePhrase(id) {	
+			
+			var idCharacter = $('#formCharacter').find('input[id="_id"]').val();
+			
+			$.ajax({
+			    url: 'http://localhost:8083/api/v1/simpsonsphrases/' + id,
+			    method: 'PUT',
+			    contentType: "application/json;",
+			    data: JSON.stringify({
+			    	character: idCharacter,
+				    phrase: $('#formPhrase').find('textarea[id=\''+id+'\']').val(),
+			    }),
+			    success: function(result) {
+			    	console.log(result);
+			    }
+			});
+		
+			
+			$.notify({
+				message: 'Phrase has been updated!'
+			},{
+				type: 'success',	
+				placement: { 
+				    from: "bottom",
+				    align: "center"
+				}
+			});
+
+			return false;
+		}
+	</script>
+	
+	<script title="DELETE CHARACTER">	
+		$(document).ready(function(){
+			$('#deleteCharacter').click(function(){
+				
+				var id = $('#formCharacter').find('input[id="_id"]').val();
+
+				$.ajax({
+				    url: 'http://localhost:8083/api/v1/simpsonscharacters/' + id,
+				    method: 'DELETE',
+				    success: function(result, status) {
+				    	console.log(status);
+				    	
+				    	$("#formGrl").css("display", "none");
+						$('#'+id).remove();
+						
+						
+						document.getElementById("newFirstName").value = "";
+						document.getElementById("newLastName").value = "";
+						document.getElementById("newAge").value = "";
+						$("#formNewCharacter").css("display", "block");
+				    }
+				});
+				
+				$.notify({
+					message: 'Character has been deleted!'
+				},{
+					type: 'danger',	
+					placement: { 
+					    from: "bottom",
+					    align: "center"
+					}
+				});
+				
+				return false;
+			});	
+		});
+	</script>
+	
+	<script title="DELETE PHRASE">
+		function deletePhrase(id) {	
+			
+			$.ajax({
+			    url: 'http://localhost:8083/api/v1/simpsonsphrases/' + id,
+			    method: 'DELETE',
+			    success: function(result, status) {
+			    	console.log(status);
+			    	$('#'+id).remove();
+			    }
+			});
+			
+			$.notify({
+				message: 'Phrase has been deleted!'
+			},{
+				type: 'danger',	
+				placement: { 
+				    from: "bottom",
+				    align: "center"
+				}
+			});
+			
+			return false;
+		}
+	</script>
+	
+	<script title="NEW PHRASE">	
+		$(document).ready(function(){
+			$('#btnNewPhrase').click(function(){
+				
+				var idCharacter = $('#formCharacter').find('input[id="_id"]').val();
+
+				$.ajax({
+				    url: 'http://localhost:8083/api/v1/simpsonsphrases/',
+				    method: 'POST',
+				    contentType: "application/json;",
+				    data: JSON.stringify({
+				    	character: idCharacter,
+					    phrase: $('#newPhrase').val(),
+				    }),
+				    success: function(result, status) {
+				    	console.log(status);
+				    	document.getElementById("newPhrase").value = "";
+				    	return getPhrases(idCharacter);
+				    }
+				});
+				
+				$.notify({
+					message: 'New Phrase has been added!'
+				},{
+					type: 'success',	
+					placement: { 
+					    from: "bottom",
+					    align: "center"
+					}
+				});
+				
+			});	
+		});
+	</script>
+	
+	<script title="NEW CHARACTER">	
+		function newCharacter(id) {	
+			
+			$.ajax({
+			    url: 'http://localhost:8083/api/v1/simpsonscharacters',
+			    method: 'POST',
+			    contentType: "application/json;",
+			    data: JSON.stringify({
+			    	firstName: $('#formNewCharacter').find('input[id="newFirstName"]').val(),
+				    lastName: $('#formNewCharacter').find('input[id="newLastName"]').val(),
+				    age: $('#formNewCharacter').find('input[id="newAge"]').val(),
+				    picture: $('#formNewCharacter').find('select').val(),
+			    }),
+			    success: function(result, status) {
+			    	console.log(status);
+			    	location.reload();
+			    }
+			});
+			
+			$.notify({
+				message: 'New Character has been added!'
+			},{
+				type: 'success',	
+				placement: { 
+				    from: "bottom",
+				    align: "center"
+				}
+			});	
+		}
+	</script>
+	
+  </head>
+  <body>
+  
+<div>
+	<div class="row">
+  		<nav class="navbar">
+	    	<div class="col-1">
+	        	<a href="/" class="navbar-toggle">
+	           		<img alt="" class="simpsons-family" src="images/simpsons-family.png">
+	       		</a>
+	     	</div>
+	     
+	     	<div class="col-11">
+		     	<div class="logo">
+		        	<img alt="" src="images/the-simpsons.png">
+	    	    </div>
+	     	</div>
+		</nav>
+	</div>
+	
+	<div class="container">
+		<div class="content">		
+			<div class="row">
+				
+				<div class="col-2">
+					<ul id="listCharacter" class="listCharacter"></ul>
+				</div>
+
+				<div id="formNewCharacter" class="col-10 desc">				
+					<form id="formNewCharacter" class="formNewCharacter" onsubmit="return newCharacter()">
+						<button type="submit" id="btnNewCharacter" class="btn btn-primary" style="margin: 10px 0; ">Add Character</button>
+						
+						<div class="form-group row">
+						    <label for="newFirstName" class="col-sm-2 col-form-label">First Name</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="newFirstName">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="newLastName" class="col-sm-2 col-form-label">Last Name</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" id="newLastName">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="newAge" class="col-sm-2 col-form-label">Age</label>
+						    <div class="col-sm-10">
+						      <input type="number" class="form-control" id="newAge">
+						    </div>
+						</div>
+						<div class="form-group row">
+							<label for="selectPicture" class="col-sm-2 col-form-label">Picture</label>
+						    <div class="col-sm-10">
+						      <select id="selectPicture" class="form-control">
+						      </select>
+						    </div>					
+						 </div>
+					</form>
+				</div>
+
+			
+				<div id="formGrl" class="col-10 desc">
+					<form id="formCharacter" class="formCharacter" onsubmit="return updateCharacter()">
+						<h1>Character</h1> 
+						<button type="submit" id="btnFormCharacter" style="margin-bottom: 20px;" class="btn btn-primary">Update</button>
+					 	<button type="button" id="deleteCharacter" style="margin-left: 40px; margin-bottom: 20px;" class="btn btn-danger">Delete</button>
+						<input style="display: none" id="_id">
+						<input style="display: none" id="picture">
+					  <div class="form-group row">
+					    <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" id="firstName">
+					    </div>
+					  </div>
+					  <div class="form-group row">
+					    <label for="lastName" class="col-sm-2 col-form-label">Last Name</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" id="lastName">
+					    </div>
+					  </div>
+					  <div class="form-group row">
+					    <label for="age" class="col-sm-2 col-form-label">Age</label>
+					    <div class="col-sm-10">
+					      <input type="number" class="form-control" id="age">
+					    </div>
+					  </div>
+					  <br/>
+					</form>
+					
+					<br/>
+					
+					<form id="formPhrase" class="formPhrase">
+						<div class="row">
+							<div class="col-12" style="margin: 0; padding: 0; text-align: center">
+								<button type="button" id="btnNewPhrase" class="btn btn-primary" style="margin: 10px 0; ">Add Phrase</button>
+								<div class="container">
+									<textarea id="newPhrase" class="form-control newPhrase" aria-label="With textarea" style="resize: none; width: 100%;" rows="2" ></textarea>
+								</div>
+							</div>
+						</div>
+						<br/>
+						<div>
+							<h1 style="text-align: center">Phrase(s)</h1>
+							<div class="form-group row">
+								<div id="listPhrase" class="container phraseDesc col-12" style="width: 100%;">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+   
+  </body>
+</html>

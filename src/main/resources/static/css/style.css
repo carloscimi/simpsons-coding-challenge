@@ -1,0 +1,148 @@
+.navbar {
+  background-color: #20272a;
+  height: 75px;
+  box-sizing: border-box;
+  width: 100%;
+  box-shadow: 0 5px 5px 0 rgba(0,0,0,.3);
+  top: 0;
+  position: fixed;
+  z-index: 9999;
+}
+
+ .navbar-toggle {
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 70px;
+  line-height: 70px;
+  text-align: center;
+ }
+
+.simpsons-family {
+	margin-top: -10px;
+	height: 70px;
+	width: 70px;
+	text-align: center;
+}
+
+.logo {
+  margin-left: 45px;
+  margin-top: 0px;
+  text-align: center
+}
+.logo img {
+   height: 70px;
+   width: 220px;
+   margin-top: -10px;
+}
+ 
+@media(max-width: 64em) {
+
+  .logo {
+    margin-left: 7px;
+  }
+
+}
+ 
+
+#listCharacter {
+	margin-left: 0px;
+	padding: 0px;
+	left: 0;
+}
+
+
+.listCharacter {
+	padding: 0px;
+}
+.listCharacter > li {
+	list-style-type: none;
+}
+.simpsons-icon {
+	height: 90px;
+	width: 70px;
+}
+
+.simpsons-icon:hover {
+	margin-left: 10px;
+}
+ 
+.content {
+	margin-top: 70px;
+	padding: 20px;
+	width: 100%;
+	background-color: white;
+	box-shadow: 0 5px 5px 0 rgba(0,0,0,.3);
+}
+
+.desc {
+	text-align: center;
+	display: none;
+}
+ 
+
+.formCharacter, .formNewCharacter {
+	 border: 1px solid whitesmoke;
+	 padding-bottom: 10px;
+}
+
+.formCharacter:hover, .formPhrase:hover, .formNewCharacter:hover {
+	 border-color: gray;
+}
+
+.formPhrase {
+	border: 1px solid whitesmoke;
+}
+
+.formCharacter > div > label {
+	font-weight: bold;
+}
+
+.formNewCharacter > div > label {
+	font-weight: bold;
+}
+ 
+.formCharacter > div > input {
+	width: calc(100% - 300px);
+}
+ 
+.phraseDesc {
+	text-align: left;
+}
+
+.newPhrase:hover {
+	border-color: gray;
+}
+
+.phraseDesc > div > textarea:hover {
+	border-color: gray;
+}
+ 
+ 
+ 
+ 
+.row {
+	margin: 0;
+	margin-bottom: 10px;
+}
+ 
+html, body {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: Open Sans,Helvetica Neue,sans-serif;
+  font-weight: 400;
+  color: #333c40;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  background-color: whitesmoke;
+}
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
